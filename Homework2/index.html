@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2; /* Light gray background */
+            margin: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+            .form-group label {
+                width: 120px;
+                margin-right: 10px;
+                color: #333;
+            }
+
+            .form-group select,
+            .form-group input {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-right: 20px;
+            }
+
+            .form-group select {
+                margin-right: 30px;
+            }
+
+            .form-group input[type="text"] {
+                margin-right: 10px; /* Margin between course name and grade */
+            }
+
+            .form-group button {
+                padding: 10px;
+                background-color: #4CAF50; /* Green button */
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .form-group button:hover {
+                    background-color: #45a049; /* Darker shade of green on hover */
+                }
+
+        .result {
+            margin-top: 10px;
+            font-weight: bold;
+            background-color: #f2f2f2; /* Light gray background */
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        h2 {
+            color: #4CAF50; /* Green title */
+        }
+    </style>
+</head>
+<body>
+    <!-- Embed your own music -->
+    <audio autoplay loop>
+        <source src="calc.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container">
+        <h2>GPA Calculator</h2>
+        <form id="gpaForm">
+            <!-- Course 1 -->
+            <div class="form-group">
+                <label for="course1">Course Name:</label>
+                <input type="text" id="course1" name="course1">
+                <label for="grade1">Grade:</label>
+                <select id="grade1" name="grade1" required>
+                    <option value="">Select Grade</option>
+                    <option value="A">A</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="C+">C+</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="F">F</option>
+                </select>
+                <label for="credit1">Credit Hours:</label>
+                <input type="number" id="credit1" name="credit1" required>
+            </div>
+
+            <!-- Dynamic row template -->
+            <div id="additionalCourses"></div>
+
+            <div class="form-group">
+                <button type="button" onclick="addRow()">Add Course</button>
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="calculateGPA()">Calculate GPA</button>
+            </div>
+        </form>
+        <div class="result" id="gpaResult"></div>
+    </div>
+
+    <script>
+        let courseCount = 1;
+
+        function addRow() {
+            courseCount++;
+
+            let newRow = document.createElement('div');
+            newRow.classList.add('form-group');
+            newRow.innerHTML = `
+        <label for="course${courseCount}">Course Name:</label>
+        <input type="text" id="course${courseCount}" name="course${courseCount}">
+        <label for="grade${courseCount}">Grade:</label>
+        <select id="grade${courseCount}" name="grade${courseCount}" required>
+            <option value="">Select Grade</option>
+            <option value="A">A</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="C+">C+</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="F">F</option>
+        </select>
+        <label for="credit${courseCount}">Credit Hours:</label>
+        <input type="number" id="credit${courseCount}" name="credit${courseCount}" required>
+    `;
+
+            document.getElementById('additionalCourses').appendChild(newRow);
+        }
+
+        function calculateGPA() {
+            // Array to store courses data
+            let courses = [];
+
+            // Fetching input values for the first course
+            let firstCourse = {
+                name: document.getElementById('course1').value,
+                grade: document.getElementById('grade1').value,
+                credit: parseFloat(document.getElementById('credit1').value)
+            };
+            courses.push(firstCourse);
+
+            // Fetching input values for additional courses
+            for (let i = 2; i <= courseCount; i++) {
+                let course = {
+                    name: document.getElementById(`course${i}`).value,
+                    grade: document.getElementById(`grade${i}`).value,
+                    credit: parseFloat(document.getElementById(`credit${i}`).value)
+                };
+                courses.push(course);
+            }
+
+            // GPA calculation logic (for simplicity, assuming grades are A, B, C, D, F)
+            let gradePoints = {
+                'A': 4.0,
+                'B+': 3.5,
+                'B': 3.0,
+                'C+': 2.5,
+                'C': 2.0,
+                'D': 1.0,
+                'F': 0.0
+            };
+
+            // Calculate total grade points and total credits
+            let totalGradePoints = 0;
+            let totalCredits = 0;
+
+            courses.forEach(course => {
+                totalGradePoints += gradePoints[course.grade] * course.credit;
+                totalCredits += course.credit;
+            });
+
+            // Calculate GPA
+            let gpa = totalGradePoints / totalCredits;
+
+            // Display the GPA result
+            let gpaResult = document.getElementById('gpaResult');
+            gpaResult.innerHTML = `Your GPA is: ${gpa.toFixed(2)}`;
+        }
+    </script>
+
+</body>
+</html>
